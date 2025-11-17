@@ -1,4 +1,3 @@
-// backend/models/CustomRecipe.js
 import mongoose from "mongoose";
 
 const customRecipeSchema = new mongoose.Schema(
@@ -18,5 +17,5 @@ const customRecipeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const custom_recipe = mongoose.model("CustomRecipe", customRecipeSchema);
-export default custom_recipe;
+const customRecipe = mongoose.model("CustomRecipe", customRecipeSchema);
+export default customRecipe;
