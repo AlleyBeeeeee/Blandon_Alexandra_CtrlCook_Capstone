@@ -9,3 +9,5 @@ import {
 } from "../controllers/recipeController.js";
 
 const router = express.Router();
+
+router.get("/search", searchExternalRecipes); //route for searching
