@@ -25,14 +25,14 @@ export const searchExternalRecipes = async (req, res) => {
 
 // CRUD
 
-// C - create
+// C - create custom recipe
 export const createCustomRecipe = async (req, res) => {
   const { originalApiId, title, customIngredients, customInstructions } =
     req.body;
   try {
     // creates a new document in the customrecipes collection
     const newRecipe = await CustomRecipe.create({
-      owner: req.user._id, // uses the authenticated user's id from the 'protect' middleware
+      owner: req.user._id, // uses the authenticated user's id from the middleware
       originalApiId,
       title,
       customIngredients,
@@ -42,5 +42,42 @@ export const createCustomRecipe = async (req, res) => {
     res.status(201).json(newRecipe);
   } catch (error) {
     res.status(400).json({ message: "error saving custom recipe." });
+  }
+};
+
+// R - read for one user
+export const getCustomRecipes = async (req, res) => {
+  try {
+    // finds all documents where the 'owner' field matches the authenticated user's id
+    const recipes = await CustomRecipe.find({ owner: req.user._id });
+    // sends the array of custom recipes back to the frontend for the cookbook view
+    res.status(200).json(recipes);
+  } catch (error) {
+    res.status(500).json({ message: "failed to retrieve custom recipes." });
+  }
+};
+
+// U - update recipe
+export const updateCustomRecipe = async (req, res) => {
+  const { id } = req.params; // gets the recipe ID from the url parameter
+
+  try {
+    // finds and updates the recipe only if the ID matches AND the owner matches the logged-in user
+    const updatedRecipe = await CustomRecipe.findOneAndUpdate(
+      { _id: id, owner: req.user._id }, // primary query with authorization check
+      req.body, // data sent from the frontend to update
+      { new: true, runValidators: true } // 'new: true' returns the updated document
+    );
+
+    if (!updatedRecipe) {
+      // handles case where recipe id is wrong or user is not the owner (unauthorized)
+      return res
+        .status(404)
+        .json({ message: "recipe not found or unauthorized." });
+    }
+
+    res.status(200).json(updatedRecipe);
+  } catch (error) {
+    res.status(400).json({ message: "error updating custom recipe." });
   }
 };
