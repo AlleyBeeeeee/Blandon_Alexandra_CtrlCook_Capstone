@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const customRecipeSchema = new mongoose.Schema(
+const CustomRecipeSchema = new mongoose.Schema(
   {
     // links this recipe back to the user who created it
     owner: {
@@ -17,5 +17,5 @@ const customRecipeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const customRecipe = mongoose.model("CustomRecipe", customRecipeSchema);
-export default customRecipe;
+const customRecipe = mongoose.model("CustomRecipe", CustomRecipeSchema);
+export default CustomRecipe;
