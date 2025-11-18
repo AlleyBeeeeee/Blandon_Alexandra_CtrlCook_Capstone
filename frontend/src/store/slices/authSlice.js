@@ -1,3 +1,4 @@
+//User Authentication (Client): Manages local user state and JWT.
 // Redux slice manages the application's user state, handles successful login/logout, tracks the authenticated status, manages storing/retrieving the user object from local storage.
 
 import { createSlice } from "@reduxjs/toolkit";
