@@ -8,3 +8,10 @@ export const searchRecipes = async (query) => {
   const response = await axios.get(`/api/recipes/search?query=${query}`); // request to backend search
   return response.data; // returns recipe array results
 };
+
+export const saveCustomRecipe = async (recipeData, token) => {
+  //save custome recipes
+  const config = { headers: { authorization: `bearer ${token}` } }; //jwt token reuqest  for auth
+  const response = await axios.post("/api/recipes", recipeData, config);
+  return response.data; //returns created recipe objet
+};
