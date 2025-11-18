@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // imports routing components.
+import axios from "axios"; // imports axios
 import Navbar from "./components/Layout/Navbar";
 import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0);
+axios.defaults.baseURL = "http://localhost:5000"; // sets the default express server host
 
+function App() {
   return (
     <Router>
       <Navbar />
