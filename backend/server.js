@@ -14,3 +14,8 @@ app.use(express.json());
 
 // recipe route integration
 app.use("/api/recipes", recipe_routes);
+
+// verify server is running
+app.get("/api/test", (req, res) => {
+  res.json({ message: "backend api is running successfully on port 5000!" });
+});
