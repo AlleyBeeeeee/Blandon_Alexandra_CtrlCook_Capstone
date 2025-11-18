@@ -1,5 +1,5 @@
 import express from "express";
-import { protect } from "../middleware/authMiddleware.js";
+import { guard } from "../middleware/authMiddleware.js";
 import {
   searchExternalRecipes,
   createCustomRecipe,
@@ -7,3 +7,5 @@ import {
   updateCustomRecipe,
   deleteCustomRecipe,
 } from "../controllers/recipeController.js";
+
+const router = express.Router();
