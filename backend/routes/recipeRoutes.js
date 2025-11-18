@@ -6,6 +6,7 @@ import {
   getCustomRecipes,
   updateCustomRecipe,
   deleteCustomRecipe,
+  getCustomRecipeById,
 } from "../controllers/recipeController.js";
 
 const router = express.Router();
@@ -19,6 +20,7 @@ router // protected routes for managing users custom data
 
 router
   .route("/:id")
+  .get(protect, getCustomRecipeById) // read single
   .put(guard, updateCustomRecipe) // update
   .delete(guard, deleteCustomRecipe); // delete
 
