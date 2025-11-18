@@ -10,13 +10,13 @@ function App() {
     <Router>
       <Navbar />
       <div>
-        <Routes>
-          {/* routes for user authentication. */}
-          <Route path="/login" element={<LoginView />} />
-          <Route path="/register" element={<LoginView />} />
-          {/* catch-all route (path="*") displays the notfound component for any unmatched url */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {/* <Routes> */}
+        {/* routes for user authentication. */}
+        {/* <Route path="/login" element={<LoginView />} /> */}
+        {/* <Route path="/register" element={<LoginView />} /> */}
+        {/* catch-all route (path="*") displays the notfound component for any unmatched url */}
+        {/* <Route path="*" element={<NotFound />} /> */}
+        {/* </Routes> */}
       </div>
     </Router>
   );
