@@ -25,3 +25,16 @@ export const getCustomRecipe = async (token) => {
   const response = await axios.get("/api/recipes", config); //get request for user data
   return response.data; //array of custom recipes
 };
+
+//update
+export const updateCustomRecipe = async (recipeId, updateData, token) => {
+  //updates existing custom recipe
+  const config = { headers: { authorization: `bearer ${token}` } }; //jwt token for protected route
+  const response = await axios.put(
+    //sends put request recipe id endpoint
+    `/api/recipes/${recipe_id}`,
+    update_data,
+    config
+  );
+  return response.data; // returns the updated recipe
+};
