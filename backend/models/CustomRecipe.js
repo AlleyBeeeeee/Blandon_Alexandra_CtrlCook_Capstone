@@ -1,3 +1,5 @@
+//custom recipe blueprint
+
 import mongoose from "mongoose";
 
 const CustomRecipeSchema = new mongoose.Schema(
