@@ -50,6 +50,40 @@ function LoginView() {
           {message}
         </p>
       )}
+      <form onSubmit={handleSubmit}>
+        {isRegister && (
+          <input
+            type="text"
+            placeholder="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        )}
+        <input
+          type="email"
+          placeholder="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">{isRegister ? "sign up" : "log in"}</button>
+      </form>
+      <p
+        onClick={() => setIsRegister(!isRegister)}
+        style={{ cursor: "pointer", marginTop: "15px" }}
+      >
+        {isRegister
+          ? "Already have an account? Login"
+          : "Need an account? Register"}
+      </p>
     </div>
   );
 }
