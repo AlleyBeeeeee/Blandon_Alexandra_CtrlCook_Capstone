@@ -33,7 +33,7 @@ function Navbar() {
             fontSize: "1.5em",
           }}
         >
-          Ctrl+cook
+          Ctrl+Cook
         </Link>
       </div>
 

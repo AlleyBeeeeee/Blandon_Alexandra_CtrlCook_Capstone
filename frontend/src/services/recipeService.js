@@ -8,6 +8,7 @@ export const searchRecipes = async (query) => {
   const response = await axios.get(`/api/recipes/search?query=${query}`); // request to backend search
   return response.data; // returns recipe array results
 };
+
 //CRUD Ops
 
 // create
@@ -17,13 +18,18 @@ export const saveCustomRecipe = async (recipeData, token) => {
   const response = await axios.post("/api/recipes", recipeData, config);
   return response.data; //returns created recipe objet
 };
-
+// R  function to fetch all custom recipes for the logged-in user
+export const getCustomRecipes = async (token) => {
+  const config = { headers: { authorization: `bearer ${token}` } };
+  const response = await axios.get("/api/recipes", config);
+  return response.data;
+};
 // read
-export const getCustomRecipe = async (token) => {
-  //fetch custom recipes for user
-  const config = { headers: { authorization: `bearer ${token}` } }; //jwt token for protected route
-  const response = await axios.get("/api/recipes", config); //get request for user data
-  return response.data; //array of custom recipes
+export const getCustomRecipeById = async (recipeId, token) => {
+  const config = { headers: { authorization: `bearer ${token}` } };
+  // sends GET request to recipe id endpoint
+  const response = await axios.get(`/api/recipes/${recipeId}`, config);
+  return response.data; // returns the single recipe object.
 };
 
 //update
