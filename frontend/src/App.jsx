@@ -1,22 +1,34 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // imports routing components.
-import axios from "axios"; // imports axios
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import axios from "axios";
 import Navbar from "./components/Layout/Navbar";
-import "./App.css";
 
-axios.defaults.baseURL = "http://localhost:5000"; // sets the default express server host
+//  all pages
+import SearchView from "./pages/SearchView";
+import MyCookbook from "./pages/MyCookbook";
+import EditorView from "./pages/EditorView";
+import LoginView from "./pages/LoginView";
+import NotFound from "./pages/NotFound";
+import "./App.css"; // imports global styles
+
+// sets the default express server host for all axios requests
+axios.defaults.baseURL = "http://localhost:5000";
 
 function App() {
   return (
     <Router>
       <Navbar />
-      <div>
-        {/* <Routes> */}
-        {/* routes for user authentication. */}
-        {/* <Route path="/login" element={<LoginView />} /> */}
-        {/* <Route path="/register" element={<LoginView />} /> */}
-        {/* catch-all route (path="*") displays the notfound component for any unmatched url */}
-        {/* <Route path="*" element={<NotFound />} /> */}
-        {/* </Routes> */}
+      <div className="container">
+        <Routes>
+          <Route path="/" element={<SearchView />} />
+          <Route path="/search" element={<SearchView />} />
+          <Route path="/cookbook" element={<MyCookbook />} />
+          <Route path="/editor/:id" element={<EditorView />} />
+
+          <Route path="/login" element={<LoginView />} />
+          <Route path="/register" element={<LoginView />} />
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </div>
     </Router>
   );

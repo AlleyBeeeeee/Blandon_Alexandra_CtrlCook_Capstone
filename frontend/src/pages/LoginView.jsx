@@ -1,12 +1,16 @@
+// User Authentication (Client UI)
+
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../store/slices/authSlice.js";
+import { register, login } from "../services/authService";
 
 function LoginView() {
   const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const dispatch = useDispatch();
 
   // form submission handler for login / register
@@ -43,14 +47,23 @@ function LoginView() {
   };
 
   return (
-    <div>
+    <div className="auth-form-container">
       <h2>{isRegister ? "register" : "login"}</h2>
+      {/* Display messages using CSS classes defined in App.css */}
       {message && (
-        <p style={{ color: message.includes("error") ? "red" : "green" }}>
+        <p
+          className={
+            message.includes("error") || message.includes("failed")
+              ? "error-msg"
+              : "success-msg"
+          }
+        >
           {message}
         </p>
       )}
+
       <form onSubmit={handleSubmit}>
+        {/* Username input shown only during registration */}
         {isRegister && (
           <input
             type="text"
@@ -76,13 +89,18 @@ function LoginView() {
         />
         <button type="submit">{isRegister ? "sign up" : "log in"}</button>
       </form>
+
+      {/* Toggle link to switch between login and register views */}
       <p
-        onClick={() => setIsRegister(!isRegister)}
-        style={{ cursor: "pointer", marginTop: "15px" }}
+        onClick={() => {
+          setIsRegister(!isRegister);
+          setMessage(""); // clear message on mode switch
+        }}
+        className="toggle-auth"
       >
         {isRegister
-          ? "Already have an account? Login"
-          : "Need an account? Register"}
+          ? "already have an account? login"
+          : "need an account? register"}
       </p>
     </div>
   );
