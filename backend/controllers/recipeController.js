@@ -48,7 +48,7 @@ export const createCustomRecipe = async (req, res) => {
 // R - read for one user
 export const getCustomRecipes = async (req, res) => {
   try {
-    // finds all documents where the 'owner' field matches the authenticated user's id
+    // finds all documents where the owner matches the authenticated users id
     const recipes = await CustomRecipe.find({ owner: req.user._id });
     // sends the array of custom recipes back to the frontend for the cookbook view
     res.status(200).json(recipes);
@@ -60,7 +60,6 @@ export const getCustomRecipes = async (req, res) => {
 // U - update recipe
 export const updateCustomRecipe = async (req, res) => {
   const { id } = req.params; // gets the recipe ID from the url parameter
-
   try {
     // finds and updates the recipe only if the ID matches AND the owner matches the logged-in user
     const updatedRecipe = await CustomRecipe.findOneAndUpdate(
@@ -68,16 +67,38 @@ export const updateCustomRecipe = async (req, res) => {
       req.body, // data sent from the frontend to update
       { new: true, runValidators: true } // 'new: true' returns the updated document
     );
-
     if (!updatedRecipe) {
-      // handles case where recipe id is wrong or user is not the owner (unauthorized)
+      //recipe id is wrong or user is not the owner (unauthorized)
       return res
         .status(404)
         .json({ message: "recipe not found or unauthorized." });
     }
-
     res.status(200).json(updatedRecipe);
   } catch (error) {
     res.status(400).json({ message: "error updating custom recipe." });
+  }
+};
+
+//D delete recipe
+export const deleteCustomRecipe = async (req, res) => {
+  const { id } = req.params; // gets the recipe ID from the url parameter
+
+  try {
+    // finds and permanently deletes the recipe only if the ID matches AND the owner matches the logged-in user
+    const deletedRecipe = await CustomRecipe.findOneAndDelete({
+      _id: id,
+      owner: req.user._id, // primary query with authorization check
+    });
+
+    if (!deletedRecipe) {
+      // recipe id is wrong or user is not the owner (unauthorized)
+      return res
+        .status(404)
+        .json({ message: "recipe not found or unauthorized." });
+    }
+    // confirms deletion
+    res.status(200).json({ message: "recipe deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "error deleting recipe." });
   }
 };
