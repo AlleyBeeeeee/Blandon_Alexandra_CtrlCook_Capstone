@@ -4,14 +4,14 @@ import jwt from "jsonwebtoken"; // libraray for decoding / verifying tokens
 import User from "../models/User"; // asso w user id
 
 export const guard = async (req, res, next) => {
-  let token; /// checks if the request header contains auth and bearer
+  let token;
   if (
+    // checks if the request header contains auth and bearer
     req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    req.headers.authorization.startsWith("Bearer") // security for authenticating API requests
   )
-    // security for authenticating API requests
     try {
-      token = req.headers.authorization.split("")[1]; ///splits the header string and grabs token value
+      token = req.headers.authorization.split("")[1]; //splits the header string and grabs token value
       const decoded = jwt.verify(token, process.env.JWT_SECRET); // verifies the token's signature against the servers secret key
       // if valid, it decodes the payload/ contains the users id
 
