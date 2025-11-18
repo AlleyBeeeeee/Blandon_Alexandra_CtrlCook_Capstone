@@ -11,4 +11,72 @@ function Navbar() {
     dispatch(logout()); //triggers logout action
     navigate("/login"); // redirects user to login page
   }
+  return (
+    <nav
+      style={{
+        padding: "10px 20px",
+        backgroundColor: "#282c34",
+        color: "white",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <div className="nav-left">
+        <Link
+          to="/search"
+          style={{
+            color: "white",
+            textDecoration: "none",
+            fontWeight: "bold",
+            fontSize: "1.5em",
+          }}
+        >
+          Ctrl+cook
+        </Link>
+      </div>
+
+      <div className="nav-right">
+        <Link
+          to="/search"
+          style={{
+            color: "white",
+            marginRight: "15px",
+            textDecoration: "none",
+          }}
+        >
+          search
+        </Link>
+
+        {isAuthenticated ? (
+          <>
+            <Link
+              to="/cookbook"
+              style={{
+                color: "white",
+                marginRight: "15px",
+                textDecoration: "none",
+              }}
+            >
+              my cookbook
+            </Link>
+            <button
+              onClick={handleLogout}
+              style={{
+                background: "none",
+                border: "1px solid #61dafb",
+                color: "#61dafb",
+              }}
+            >
+              logout
+            </button>
+          </>
+        ) : (
+          <Link to="/login" style={{ color: "white", textDecoration: "none" }}>
+            login / register
+          </Link>
+        )}
+      </div>
+    </nav>
+  );
 }
