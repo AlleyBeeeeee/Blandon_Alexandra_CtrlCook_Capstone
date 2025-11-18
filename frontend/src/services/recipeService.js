@@ -38,3 +38,11 @@ export const updateCustomRecipe = async (recipeId, updateData, token) => {
   );
   return response.data; // returns the updated recipe
 };
+
+// delete
+export const deleteCustomRecipe = async (recipeId, token) => {
+  // fuction to delete recipe
+  const config = { headers: { authorization: `bearer ${token}` } }; // jwt token for protected route
+  const response = await axios.delete(`/api/recipes/${recipeId}`, config); //delete request to endpoint, checks if the user is owner before delete
+  return response.data; // returns a success message
+};
