@@ -1,7 +1,7 @@
 // handles both spoonacular requests and CRUD operations
 
 import axios from "axios"; // promise based http client to make ext api requests
-import CustomRecipe from "../models/CustomRecipe";
+import CustomRecipe from "../models/CustomRecipe.js";
 
 const API_KEY = process.env.SPOONACULAR_API_KEY;
 const BASE_URL = process.env.SPOONACULAR_BASE_URL;

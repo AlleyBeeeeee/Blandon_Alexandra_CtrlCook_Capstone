@@ -1,7 +1,7 @@
 // security guard - ensuring authicated users can perform actions
 
 import jwt from "jsonwebtoken"; // libraray for decoding / verifying tokens
-import User from "../models/User"; // asso w user id
+import User from "../models/User.js"; // asso w user id
 
 export const guard = async (req, res, next) => {
   let token;

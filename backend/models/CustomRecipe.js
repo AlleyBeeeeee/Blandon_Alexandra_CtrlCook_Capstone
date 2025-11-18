@@ -17,5 +17,5 @@ const CustomRecipeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const customRecipe = mongoose.model("CustomRecipe", CustomRecipeSchema);
+const CustomRecipe = mongoose.model("CustomRecipe", CustomRecipeSchema);
 export default CustomRecipe;
