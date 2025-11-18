@@ -11,3 +11,6 @@ const app = express();
 // allows frontend (port 5173) to communicate with backend (port 5000)
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
+
+// recipe route integration
+app.use("/api/recipes", recipe_routes);
