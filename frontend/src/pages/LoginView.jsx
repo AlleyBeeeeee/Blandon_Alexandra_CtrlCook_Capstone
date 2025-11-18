@@ -41,4 +41,17 @@ function LoginView() {
       console.error("auth error:", error);
     }
   };
+
+  return (
+    <div>
+      <h2>{isRegister ? "register" : "login"}</h2>
+      {message && (
+        <p style={{ color: message.includes("error") ? "red" : "green" }}>
+          {message}
+        </p>
+      )}
+    </div>
+  );
 }
+
+export default LoginView;
