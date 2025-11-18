@@ -11,3 +11,8 @@ import {
 const router = express.Router();
 
 router.get("/search", searchExternalRecipes); //route for searching
+
+router // protected routes for managing users custom data
+  .route("/")
+  .post(guard, createCustomRecipe) // create
+  .get(guard, getCustomRecipes); // read all users recipes
