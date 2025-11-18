@@ -21,3 +21,5 @@ router
   .route("/:id")
   .put(guard, updateCustomRecipe) // update
   .delete(guard, deleteCustomRecipe); // delete
+
+export default router;
