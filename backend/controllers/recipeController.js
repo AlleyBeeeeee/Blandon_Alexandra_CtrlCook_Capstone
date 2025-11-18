@@ -2,26 +2,39 @@
 
 import axios from "axios"; // promise based http client to make ext api requests
 import CustomRecipe from "../models/CustomRecipe.js";
+import e from "express";
 
 const API_KEY = process.env.SPOONACULAR_API_KEY;
 const BASE_URL = process.env.SPOONACULAR_BASE_URL;
 
 // r - read (external api wrapper)
-export const searchExternalRecipes = async (req, res) => {
-  const { query } = req.query; // extracts the search term from the url query parameters
-  try {
-    // uses axios to request data from spoonacular securely
-    const response = await axios.get(`${BASE_URL}/recipes/complexSearch`, {
-      // pass search parameters with api key
-      params: { query, apiKey: API_KEY, number: 10, fillIngredients: true },
-    });
-    // sends results array back to the frontend
-    res.json(response.data.results);
-  } catch (error) {
-    // handles errors
-    res.status(500).json({ message: "failed to fetch external recipes." });
+export const searchExternalRecipes = asyncHandler(async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    res.status(400);
+    throw new Error("please provide a search query");
   }
-};
+
+  try {
+    // call the external api using the key from the .env file
+    const apiResponse = await axios.get(
+      "https://api.spoonacular.com/recipes/complexSearch",
+      {
+        params: {
+          apiKey: process.env.SPOONACULAR_API_KEY,
+          query: query,
+          number: 10, // limits results to 10
+        },
+      }
+    );
+
+    // return the results array (or empty array if none found)
+    res.json(apiResponse.data.results);
+  } catch (error) {
+    res.status(500).json({ message: "failed to fetch external recipes" });
+  }
+});
 
 // CRUD
 
