@@ -23,6 +23,7 @@ function Navbar() {
       }}
     >
       <div className="nav-left">
+        {/* main link for the brand / redirects to search page */}
         <Link
           to="/search"
           style={{
@@ -37,6 +38,7 @@ function Navbar() {
       </div>
 
       <div className="nav-right">
+        {/* search link visible for public recipe searching */}
         <Link
           to="/search"
           style={{
@@ -47,9 +49,10 @@ function Navbar() {
         >
           search
         </Link>
-
+        {/* conditionally renders links based on the authentication state */}
         {isAuthenticated ? (
           <>
+            {/* link to the user's protected cookbook view */}
             <Link
               to="/cookbook"
               style={{
@@ -60,6 +63,7 @@ function Navbar() {
             >
               my cookbook
             </Link>
+            {/* button to trigger the logout function */}
             <button
               onClick={handleLogout}
               style={{
@@ -72,6 +76,7 @@ function Navbar() {
             </button>
           </>
         ) : (
+          // if not logged in, show a link to the login/register view
           <Link to="/login" style={{ color: "white", textDecoration: "none" }}>
             login / register
           </Link>
@@ -80,3 +85,4 @@ function Navbar() {
     </nav>
   );
 }
+export default Navbar;
