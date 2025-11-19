@@ -1,33 +1,41 @@
+// backend/server.js
 import express from "express";
 import dotenv from "dotenv";
-import connectdb from "./config/db.js";
 import cors from "cors";
+import connectdb from "./config/db.js"; // Assuming this is your DB connection function
 import recipeRoutes from "./routes/recipeRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
+import userRoutes from "./routes/userRoutes.js"; // Assuming you have user routes
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js"; // Imports error middleware
 
-dotenv.config();
-connectdb();
-const PORT = process.env.PORT || 5000;
+dotenv.config({ path: "./.env" });
+
+connectdb(); // Connects to the MongoDB database
 
 const app = express();
-// allows frontend (port 5173) to communicate with backend (port 5000)
+const PORT = process.env.PORT || 5000;
 
-//middleware
+// CORS middleware for allowing frontend communication
 app.use(cors({ origin: "http://localhost:5173" }));
+
+// Body parser for raw JSON data
 app.use(express.json());
-app.use(express.urlencoded({ extended: false })); // body parser for form data
 
-// recipe route integration
-app.use("/api/recipes", recipeRoutes); // mounts recipe routes (CRUD & Search)
-app.use("/api/users", userRoutes); // mounts user routes (Register & Login)
+// Body parser for form data
+app.use(express.urlencoded({ extended: false }));
 
-// catches requests that didn't match any route
-app.use(notFound);
-// middleware error handler (must be after routes)
-app.use(errorHandler);
+// Base route (health check)
+app.get("/", (req, res) => {
+  res.json({ message: "backend api is running." });
+});
 
-//server start
+// Mount user and recipe routes
+app.use("/api/recipes", recipeRoutes);
+app.use("/api/users", userRoutes);
+
+// Must be after all routes
+app.use(notFound); // 404 handler
+app.use(errorHandler); // General error handler
+
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);
 });
