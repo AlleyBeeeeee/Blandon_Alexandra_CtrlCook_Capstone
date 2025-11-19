@@ -4,7 +4,7 @@ import connectdb from "./config/db.js";
 import cors from "cors";
 import recipeRoutes from "./routes/recipeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import { errorHandler } from "./middleware/errorMiddleware.js";
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
 connectdb();
@@ -22,10 +22,12 @@ app.use(express.urlencoded({ extended: false })); // body parser for form data
 app.use("/api/recipes", recipeRoutes); // mounts recipe routes (CRUD & Search)
 app.use("/api/users", userRoutes); // mounts user routes (Register & Login)
 
+// catches requests that didn't match any route
+app.use(notFound);
 // middleware error handler (must be after routes)
 app.use(errorHandler);
 
-//
+//server start
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);
 });

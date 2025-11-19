@@ -7,20 +7,27 @@ import {
   updateCustomRecipe,
   deleteCustomRecipe,
   getCustomRecipeById,
+  getExternalRecipeDetails,
 } from "../controllers/recipeController.js";
 
 const router = express.Router();
 
-router.get("/search", searchExternalRecipes); //route for searching
+// Route for searching external recipes
+router.get("/search", searchExternalRecipes);
 
+// Route for fetching detailed external recipe by ID
+router.get("/external/:id", getExternalRecipeDetails);
+
+// Routes for base path /api/recipes (protected)
 router // protected routes for managing users custom data
   .route("/")
   .post(guard, createCustomRecipe) // create
   .get(guard, getCustomRecipes); // read all users recipes
 
+// Routes for specific recipe ID path /api/recipes/:id (protected)
 router
   .route("/:id")
-  .get(protect, getCustomRecipeById) // read single
+  .get(guard, getCustomRecipeById) // read single
   .put(guard, updateCustomRecipe) // update
   .delete(guard, deleteCustomRecipe); // delete
 
