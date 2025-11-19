@@ -5,32 +5,34 @@ import {
   saveCustomRecipe,
   updateCustomRecipe,
   getCustomRecipeById,
+  getExternalRecipeDetails,
 } from "../services/recipeService";
 
 const EditorView = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // spoonacular id or mongodb id
   const location = useLocation();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  //  determine the mode: EDITING if user is logged in/did not come from a search result state
-  const isEditing = user && !location.state?.recipe;
-  const isNewRecipe = !isEditing;
+  // determine if we are editing an existing recipe from mongodb
+  const isEditing = user && !location.state?.originalId;
+  // determine if we are customizing a new recipe from a search result
+  const isNewRecipe = location.state?.originalId && !isEditing;
 
   const [recipeData, setRecipeData] = useState({
     title: location.state?.recipe?.title || "",
-    originalApiId: location.state?.recipe?.id || null,
+    originalApiId: location.state?.originalId || null, // initialize with external id if present
     customInstructions: "",
     customIngredients: [""],
   });
 
-  // useEffect to load existing recipe data for editing
+  // useeffect to load existing recipe data for editing or fetch new recipe details
   useEffect(() => {
+    // 1. load existing recipe from mongodb (editing mode)
     if (isEditing && user?.token) {
       const fetchRecipe = async () => {
         try {
           const existingRecipe = await getCustomRecipeById(id, user.token);
-
           setRecipeData({
             title: existingRecipe.title,
             originalApiId: existingRecipe.originalApiId || null,
@@ -39,13 +41,37 @@ const EditorView = () => {
           });
         } catch (error) {
           console.error("failed to fetch recipe for editing:", error);
-          // redirect if the recipe doesn't exist or is unauthorized
+          // redirect if the recipe is not found or unauthorized
           navigate("/cookbook");
         }
       };
       fetchRecipe();
+
+      // 2. fetch full details from external api (new customization mode)
+    } else if (isNewRecipe) {
+      const fetchExternalRecipe = async () => {
+        try {
+          // fetch full details using the id passed from the search view
+          const fullRecipe = await getExternalRecipeDetails(
+            location.state.originalId
+          );
+
+          // pre-fill the state with the details from the external api
+          setRecipeData({
+            title: fullRecipe.title,
+            originalApiId: fullRecipe.originalApiId,
+            customInstructions: fullRecipe.customInstructions,
+            customIngredients: fullRecipe.customIngredients || [""],
+          });
+        } catch (error) {
+          console.error("failed to fetch external recipe details:", error);
+          alert("could not fetch recipe details. please try another recipe.");
+          navigate("/search");
+        }
+      };
+      fetchExternalRecipe();
     }
-  }, [id, isEditing, user, navigate]);
+  }, [id, isEditing, isNewRecipe, user, navigate, location.state]);
 
   const handleChange = (e) => {
     setRecipeData({ ...recipeData, [e.target.name]: e.target.value });
@@ -64,10 +90,12 @@ const EditorView = () => {
       return alert("you must be logged in to save recipes.");
 
     try {
-      if (isNewRecipe) {
-        await saveCustomRecipe(recipeData, user.token); // CREATE
+      if (isNew) {
+        // create new recipe (c)
+        await saveCustomRecipe(recipeData, user.token);
       } else {
-        await updateCustomRecipe(id, recipeData, user.token); // UPDATE
+        // update existing recipe (u)
+        await updateCustomRecipe(id, recipeData, user.token);
       }
 
       alert("recipe saved successfully!");

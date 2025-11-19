@@ -1,57 +1,65 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import { searchRecipes } from "../services/recipeService";
+import { Link } from "react-router-dom"; // import link for navigation
 
-function SearchView() {
-  const [searchTerm, setSearchTerm] = useState(""); // state for user input
-  const [results, setResults] = useState([]); // state for search results
-  const navigate = useNavigate();
+const SearchView = () => {
+  const [query, setQuery] = useState("");
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!searchTerm) return;
+    if (!query) return;
+
+    setLoading(true);
     try {
-      const data = await searchRecipes(searchTerm); // calling the api service
-      setResults(data);
+      // call the search api for summary results
+      const results = await searchRecipes(query);
+      setRecipes(results);
     } catch (error) {
       console.error("search failed:", error);
-      setResults([]);
+      alert("failed to fetch recipes from external source.");
     }
+    setLoading(false);
   };
 
   return (
     <div>
-      <h2>find recipes from the web</h2>
+      <h2>recipe search</h2>
       <form onSubmit={handleSearch}>
         <input
           type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="e.g., pasta, chicken, vegan"
+          placeholder="search for ingredients or dishes"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
         />
-        <button type="submit">search</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "searching..." : "search"}
+        </button>
       </form>
 
-      <h3>results:</h3>
-      {results.map((recipe) => (
-        // map over results and display each recipe card
-        <div
-          key={recipe.id}
-          style={{ border: "1px solid #ccc", margin: "10px", padding: "10px" }}
-        >
-          <h4>{recipe.title}</h4>
-          <button
-            // navigate to the editor, passing the api recipe data in the state object
-            onClick={() =>
-              navigate(`/editor/${recipe.id}`, { state: { recipe } })
-            }
-          >
-            customize and save
-          </button>
-        </div>
-      ))}
+      <div className="search-results">
+        {recipes.map((recipe) => (
+          <div key={recipe.id} className="recipe-card">
+            <h4>{recipe.title}</h4>
+            {/* link to the editor view, passing the external id in the url and state */}
+            {/* the editor will use this id to fetch the full details */}
+            <Link
+              to={`/editor/${recipe.id}`}
+              state={{
+                originalId: recipe.id, // pass the spoonacular id via state
+              }}
+            >
+              customize and save
+            </Link>
+          </div>
+        ))}
+        {recipes.length === 0 && !loading && query && (
+          <p>no results found for "{query}".</p>
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export default SearchView;
