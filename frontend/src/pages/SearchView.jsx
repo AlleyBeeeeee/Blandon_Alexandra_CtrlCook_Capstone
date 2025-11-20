@@ -6,59 +6,86 @@ const SearchView = () => {
   const [query, setQuery] = useState("");
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!query) return;
+    setError(null);
+    if (!query) {
+      setError("Please enter a search query.");
+      return;
+    }
 
     setLoading(true);
     try {
       // call the search api for summary results
       const results = await searchExternalRecipes(query);
       setRecipes(results);
-    } catch (error) {
-      console.error("search failed:", error);
-      alert("failed to fetch recipes from external source.");
+      if (results.length === 0) {
+        setError("No recipes found. Try a different query.");
+      }
+    } catch (err) {
+      console.error("Search failed:", err);
+      setError("Failed to fetch recipes. Check your API key and connection.");
+      setRecipes([]);
     }
     setLoading(false);
   };
 
   return (
-    <div>
-      <h2>Recipe Search</h2>
+    <div className="container">
+      <h2 className="text-3xl font-bold text-teal-600 mb-6">
+        Search External Recipes
+      </h2>
 
       {/* 🎯 Use the new 'search-form' class */}
       <form onSubmit={handleSearch} className="search-form">
         <input
           type="text"
-          placeholder="Search for ingredients or dishes..."
+          placeholder="search for ingredients or dishes"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
         <button type="submit" disabled={loading}>
-          {loading ? "Searching..." : "Search"}
+          {loading ? "searching..." : "search"}
         </button>
       </form>
 
+      {error && <p className="error-message">{error}</p>}
+
       {/* The existing recipe-card and search-results classes will handle this section */}
-      <div className="search-results">
-        {recipes.map((recipe) => (
-          <div key={recipe.id} className="recipe-card">
-            {recipe.image && <img src={recipe.image} alt={recipe.title} />}
+      {!loading && recipes.length > 0 && (
+        <div className="search-results">
+          {recipes.map((recipe) => (
+            <div key={recipe.id} className="recipe-card">
+              {/* FIX: Add image check before rendering */}
+              {recipe.image && (
+                <img
+                  src={recipe.image}
+                  alt={recipe.title}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://placehold.co/312x231/e0f2f1/004d40?text=No+Image";
+                  }}
+                />
+              )}
 
-            <h4>{recipe.title}</h4>
+              <h4>{recipe.title}</h4>
 
-            <Link
-              to={`/editor/${recipe.id}`}
-              state={{
-                originalId: recipe.id,
-              }}
-            >
-              customize and save
-            </Link>
-          </div>
-        ))}
-      </div>
+              <Link
+                to={`/editor/new`}
+                state={{
+                  originalId: recipe.id,
+                  recipe: recipe, // Pass the simplified recipe object
+                }}
+              >
+                customize and save
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
