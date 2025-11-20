@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import CustomRecipe from "../models/CustomRecipe.js";
 import axios from "axios";
+import { mockSearchResults, mockRecipeDetails } from "../mockSearchData.js";
 
 export const searchExternalRecipes = asyncHandler(async (req, res) => {
   const { query } = req.query;
@@ -9,6 +10,14 @@ export const searchExternalRecipes = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("please provide a search query");
   }
+  if (process.env.USE_MOCK_DATA === "true") {
+    return res.json(mockSearchResults);
+  }
+
+  if (!process.env.SPOONACULAR_API_KEY) {
+    res.status(500);
+    throw new Error("Spoonacular API Key is not set in environment variables.");
+  }
 
   try {
     // call the external api using the key from the .env file
@@ -16,19 +25,30 @@ export const searchExternalRecipes = asyncHandler(async (req, res) => {
       "https://api.spoonacular.com/recipes/complexSearch",
       {
         params: {
-          // FIX: Changed API_KEY to SPOONACULAR_API_KEY
           apiKey: process.env.SPOONACULAR_API_KEY,
           query: query,
-          number: 10, // limits results to 10
+          number: 10,
         },
       }
-    ); // return the results array (or empty array if none found)
+    );
 
     res.json(apiResponse.data.results);
   } catch (error) {
-    res.status(500).json({ message: "failed to fetch external recipes" });
+    const status = error.response?.status || 500;
+
+    let message = "Failed to fetch external recipes.";
+
+    if (status === 402) {
+      message =
+        "Spoonacular API quota exceeded or key invalid. Check your key and daily limit.";
+    } else if (status === 401) {
+      message =
+        "Authentication failed with Spoonacular API. Check your API key.";
+    }
+    res.status(status).json({ message });
   }
 });
+
 export const getExternalRecipeDetails = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -37,39 +57,43 @@ export const getExternalRecipeDetails = asyncHandler(async (req, res) => {
     throw new Error("recipe id is required");
   }
 
+  // mpck data check
+  if (process.env.USE_MOCK_DATA === "true") {
+    return res.json(mockRecipeDetails);
+  }
+  // api check
+  if (!process.env.SPOONACULAR_API_KEY) {
+    res.status(500);
+    throw new Error("Spoonacular API Key is not set in environment variables.");
+  }
+
   try {
-    // call the spoonacular endpoint for detailed information
     const apiResponse = await axios.get(
       `https://api.spoonacular.com/recipes/${id}/information`,
       {
         params: {
-          // fix: ensure the correct environment variable name is used here too
           apiKey: process.env.SPOONACULAR_API_KEY,
-          includeNutrition: false,
         },
       }
     );
 
-    const data = apiResponse.data;
-
-    // format the response to match the editor's expected state shape
-    const formattedRecipe = {
-      title: data.title,
-      originalApiId: data.id,
-      // use instructions or summary as a fallback for the custom instructions field
-      customInstructions:
-        data.instructions || data.summary || "instructions not available.",
-      // map extended ingredients array to a simple array of strings
-      customIngredients: data.extendedIngredients.map((ing) => ing.original),
-    };
-
-    res.json(formattedRecipe);
+    res.json(apiResponse.data);
   } catch (error) {
-    // log the error for debugging and return a 500 status
-    console.error("external api detail fetch failed:", error.message);
-    res.status(500).json({
-      message: "failed to fetch detailed recipe from external source.",
-    });
+    const status = error.response?.status || 500;
+
+    let message = "Failed to fetch external recipe details.";
+
+    if (status === 402) {
+      message =
+        "Spoonacular API quota exceeded or key invalid. Check your key and daily limit.";
+    } else if (status === 401) {
+      message =
+        "Authentication failed with Spoonacular API. Check your API key.";
+    } else if (status === 404) {
+      message = "Recipe not found on external API.";
+    }
+
+    res.status(status).json({ message });
   }
 });
 
@@ -86,9 +110,10 @@ export const createCustomRecipe = asyncHandler(async (req, res) => {
   const recipe = await CustomRecipe.create({
     owner: req.user.id,
     title,
-    originalApiId,
-    customInstructions,
-    customIngredients,
+
+    original_api_id: originalApiId,
+    custom_instructions: customInstructions,
+    custom_ingredients: customIngredients,
   });
 
   res.status(201).json(recipe);
@@ -106,13 +131,13 @@ export const getCustomRecipeById = asyncHandler(async (req, res) => {
 
   if (!recipe) {
     res.status(404);
-    throw new Error("recipe not found");
+    throw new Error("Recipe not found");
   }
 
   // ensure the found recipe belongs to the logged-in user
   if (recipe.owner.toString() !== req.user.id) {
     res.status(401);
-    throw new Error("not authorized to view this recipe");
+    throw new Error("Not authorized to view this recipe");
   }
 
   res.status(200).json(recipe);
@@ -123,13 +148,13 @@ export const updateCustomRecipe = asyncHandler(async (req, res) => {
 
   if (!recipe) {
     res.status(404);
-    throw new Error("recipe not found");
+    throw new Error("Recipe not found.");
   }
 
   // authorization check: ensure the recipe owner matches the logged-in user
   if (recipe.owner.toString() !== req.user.id) {
     res.status(401);
-    throw new Error("not authorized to update this recipe");
+    throw new Error("Not authorized to update this recipe.");
   }
 
   const updatedRecipe = await CustomRecipe.findByIdAndUpdate(
@@ -146,16 +171,16 @@ export const deleteCustomRecipe = asyncHandler(async (req, res) => {
 
   if (!recipe) {
     res.status(404);
-    throw new Error("recipe not found");
+    throw new Error("Recipe not found.");
   }
 
   // authorization check: ensure the recipe owner matches the logged-in user
   if (recipe.owner.toString() !== req.user.id) {
     res.status(401);
-    throw new Error("not authorized to delete this recipe");
+    throw new Error("Not authorized to delete this recipe.");
   }
 
   await CustomRecipe.deleteOne({ _id: req.params.id });
 
-  res.status(200).json({ id: req.params.id, message: "recipe removed" });
+  res.status(200).json({ id: req.params.id, message: "Recipe removed." });
 });
