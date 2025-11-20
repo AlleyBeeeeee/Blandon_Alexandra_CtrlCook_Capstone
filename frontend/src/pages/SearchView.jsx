@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { searchRecipes } from "../services/recipeService";
-import { Link } from "react-router-dom"; // import link for navigation
+import { useState } from "react";
+import { searchExternalRecipes } from "../services/recipeService";
+import { Link } from "react-router-dom";
 
 const SearchView = () => {
   const [query, setQuery] = useState("");
@@ -14,7 +14,7 @@ const SearchView = () => {
     setLoading(true);
     try {
       // call the search api for summary results
-      const results = await searchRecipes(query);
+      const results = await searchExternalRecipes(query);
       setRecipes(results);
     } catch (error) {
       console.error("search failed:", error);
@@ -25,38 +25,39 @@ const SearchView = () => {
 
   return (
     <div>
-      <h2>recipe search</h2>
-      <form onSubmit={handleSearch}>
+      <h2>Recipe Search</h2>
+
+      {/* 🎯 Use the new 'search-form' class */}
+      <form onSubmit={handleSearch} className="search-form">
         <input
           type="text"
-          placeholder="search for ingredients or dishes"
+          placeholder="Search for ingredients or dishes..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
         <button type="submit" disabled={loading}>
-          {loading ? "searching..." : "search"}
+          {loading ? "Searching..." : "Search"}
         </button>
       </form>
 
+      {/* The existing recipe-card and search-results classes will handle this section */}
       <div className="search-results">
         {recipes.map((recipe) => (
           <div key={recipe.id} className="recipe-card">
+            {recipe.image && <img src={recipe.image} alt={recipe.title} />}
+
             <h4>{recipe.title}</h4>
-            {/* link to the editor view, passing the external id in the url and state */}
-            {/* the editor will use this id to fetch the full details */}
+
             <Link
               to={`/editor/${recipe.id}`}
               state={{
-                originalId: recipe.id, // pass the spoonacular id via state
+                originalId: recipe.id,
               }}
             >
               customize and save
             </Link>
           </div>
         ))}
-        {recipes.length === 0 && !loading && query && (
-          <p>no results found for "{query}".</p>
-        )}
       </div>
     </div>
   );

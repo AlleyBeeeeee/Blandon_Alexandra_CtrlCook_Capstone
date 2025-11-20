@@ -1,52 +1,74 @@
 import axios from "axios";
 
-// function to search external recipes (summary)
-export const searchRecipes = async (query) => {
-  const response = await axios.get(`/api/recipes/search?query=${query}`);
+// Base URL for custom and external recipe routes (e.g., /api/recipes)
+const RECIPE_API_URL = "/api/recipes";
+
+// Helper function to safely retrieve the JWT token from local storage
+const getToken = () => JSON.parse(localStorage.getItem("user"))?.token;
+
+// Helper function to create the authenticated request configuration
+const getConfig = () => ({
+  headers: {
+    // Attach the JWT token for protected routes
+    Authorization: `Bearer ${getToken()}`,
+  },
+});
+
+// 1. Search external recipes (GET /api/recipes/search?query=...)
+// This hits your backend controller, which then calls Spoonacular.
+export const searchExternalRecipes = async (query) => {
+  const response = await axios.get(`${RECIPE_API_URL}/search`, {
+    params: { query },
+  });
   return response.data;
 };
 
-// function to fetch full details of a non-saved recipe from the external api wrapper
+// 2. Get external recipe details (GET /api/recipes/external/:id)
+// This hits your backend controller, which then calls Spoonacular for details.
 export const getExternalRecipeDetails = async (recipeId) => {
-  const response = await axios.get(`/api/recipes/external/${recipeId}`);
-  return response.data; // returns the formatted recipe object
-};
-
-// c - create: function to save a custom recipe.
-export const saveCustomRecipe = async (recipeData, token) => {
-  const config = { headers: { authorization: `bearer ${token}` } };
-  const response = await axios.post("/api/recipes", recipeData, config);
+  const response = await axios.get(`${RECIPE_API_URL}/external/${recipeId}`);
   return response.data;
 };
 
-// r - read all: function to fetch all custom recipes for the logged-in user.
-export const getCustomRecipes = async (token) => {
-  const config = { headers: { authorization: `bearer ${token}` } };
-  const response = await axios.get("/api/recipes", config);
+// --- Custom (Protected) Recipe Operations ---
+
+// 3. Create a custom recipe (POST /api/recipes)
+export const createCustomRecipe = async (recipeData) => {
+  // recipeData includes title, original_api_id, custom_instructions, custom_ingredients
+  const response = await axios.post(RECIPE_API_URL, recipeData, getConfig());
   return response.data;
 };
 
-// r - read single: function to fetch a single custom recipe by its mongodb id.
-export const getCustomRecipeById = async (recipeId, token) => {
-  const config = { headers: { authorization: `bearer ${token}` } };
-  const response = await axios.get(`/api/recipes/${recipeId}`, config);
-  return response.data;
-};
-
-// u - update: function to update an existing custom recipe.
-export const updateCustomRecipe = async (recipeId, updateData, token) => {
-  const config = { headers: { authorization: `bearer ${token}` } };
-  const response = await axios.put(
-    `/api/recipes/${recipeId}`,
-    updateData,
-    config
+// 4. Read single custom recipe (GET /api/recipes/:id)
+export const getCustomRecipeById = async (recipeId) => {
+  const response = await axios.get(
+    `${RECIPE_API_URL}/${recipeId}`,
+    getConfig()
   );
   return response.data;
 };
 
-// d - delete: function to delete a custom recipe.
-export const deleteCustomRecipe = async (recipeId, token) => {
-  const config = { headers: { authorization: `bearer ${token}` } };
-  const response = await axios.delete(`/api/recipes/${recipeId}`, config);
+// 5. Read all custom recipes for the logged-in user (GET /api/recipes)
+export const getCustomRecipes = async () => {
+  const response = await axios.get(RECIPE_API_URL, getConfig());
+  return response.data;
+};
+
+// 6. Update custom recipe (PUT /api/recipes/:id)
+export const updateCustomRecipe = async (recipeId, recipeData) => {
+  const response = await axios.put(
+    `${RECIPE_API_URL}/${recipeId}`,
+    recipeData,
+    getConfig()
+  );
+  return response.data;
+};
+
+// 7. Delete custom recipe (DELETE /api/recipes/:id)
+export const deleteCustomRecipe = async (recipeId) => {
+  const response = await axios.delete(
+    `${RECIPE_API_URL}/${recipeId}`,
+    getConfig()
+  );
   return response.data;
 };

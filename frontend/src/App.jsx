@@ -5,10 +5,10 @@ import Navbar from "./components/Layout/Navbar";
 //  all pages
 import SearchView from "./pages/SearchView";
 import MyCookbook from "./pages/MyCookbook";
-import EditorView from "./pages/EditorView";
+import EditorView from "./pages/EditorView.jsx";
 import LoginView from "./pages/LoginView";
 import NotFound from "./pages/NotFound";
-import "./App.css"; // imports global styles
+import "./App.css";
 
 // sets the default express server host for all axios requests
 axios.defaults.baseURL = "http://localhost:5000";

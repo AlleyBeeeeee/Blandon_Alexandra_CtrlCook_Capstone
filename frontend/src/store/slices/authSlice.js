@@ -3,31 +3,31 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
+// attempts to load user data from local storage on initial load
 const user = JSON.parse(localStorage.getItem("user"));
 
-const authSlice = createSlice({
-  name: "auth", //give name to slice/used as key in store
+const auth_slice = createSlice({
+  name: "auth",
   initialState: {
-    user: user || null, //stores user object or null if not logged in
-    isAuthenticated: !!user, //boolean flag - true if user exists
-    isLoading: false, // state for api request loading
-    error: null, //state for authentication erros
+    user: user || null,
+    isAuthenticated: !!user, // boolean flag for quick auth check
+    isLoading: false,
+    error: null,
   },
-
   reducers: {
-    // reducer for successful login or registration
     loginSuccess: (state, action) => {
-      state.user = action.payload; // sets user state with data
-      state.isAuthenticated = true; //sets flag to true
-      localStorage.setItem("user", JSON.stringify(action.payload));
+      // Renamed from login_success for consistency
+      state.user = action.payload;
+      state.is_authenticated = true;
+      localStorage.setItem("user", JSON.stringify(action.payload)); // saves user/token locally
     },
     logout: (state) => {
-      state.user = null; //clears use obj in the state
-      state.isAuthenticated = false; // sets flag
-      localStorage.removeItem("user"); //removes user data from local storage
+      state.user = null;
+      state.is_authenticated = false;
+      localStorage.removeItem("user"); // removes user/token on logout
     },
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions; //actions for use in components
-export default authSlice.reducer; //reducer function to be combined in the store
+export const { loginSuccess, logout } = auth_slice.actions; // Exporting loginSuccess
+export default auth_slice.reducer;
