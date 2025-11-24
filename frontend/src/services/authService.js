@@ -1,19 +1,13 @@
-//API Integration (Authentication)
+import API from "../api/axios";
 
-import axios from "axios";
-
-const API_URL = "/api/users"; // base url for user authentication routes.
-
-// REGISTER user
-export const register = async (userData) => {
-  // sends a post request to the registration endpoint (/api/users).
-  const response = await axios.post(API_URL, userData);
-  return response.data;
+export const login = async (email, password) => {
+  const { data } = await API.post("/users/login", { email, password });
+  localStorage.setItem("user", JSON.stringify(data)); // store token
+  return data;
 };
 
-//  LOGIN user
-export const login = async (userData) => {
-  // sends a post request to the login endpoint (/api/users/login).
-  const response = await axios.post(`${API_URL}/login`, userData);
-  return response.data;
+export const register = async (username, email, password) => {
+  const { data } = await API.post("/users", { username, email, password });
+  localStorage.setItem("user", JSON.stringify(data));
+  return data;
 };

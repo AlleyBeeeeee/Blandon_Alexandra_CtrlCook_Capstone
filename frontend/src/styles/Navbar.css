@@ -1,0 +1,100 @@
+/* ---------------- Navbar Container ---------------- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px; /* thin navbar */
+  padding: 0 30px;
+  background-color: #fff; /* or any color you want */
+  color: #ff951c;
+  box-shadow: none; /* removed heavy box shadow */
+  transition: all 0.3s ease;
+}
+
+.navbar-left {
+  display: flex;
+  margin-top: 40px;
+  margin-left: -40px;
+  align-items: center;
+}
+
+/* Right side links/buttons */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ---------------- Logo Styling ---------------- */
+.nav-logo {
+  height: 125px;
+  width: 125px;
+  transition: all 0.3s ease;
+}
+
+/* ---------------- Navbar Links / Buttons ---------------- */
+.navbar-right a,
+.logout-btn {
+  background: transparent;
+  border: 1px solid #ff951c;
+  color: #ff951c;
+  padding: 5px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.navbar-right a:hover,
+.logout-btn:hover {
+  background-color: #ff951c;
+  color: #fff;
+}
+.welcome-text {
+  font-weight: bold;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 768px) {
+  .navbar {
+    height: 60px;
+    padding: 0 15px;
+  }
+  .navbar-right {
+    gap: 12px;
+  }
+  .nav-logo {
+    height: 45px;
+  }
+  .navbar-right a,
+  .logout-btn,
+  .welcome-text {
+    font-size: 14px;
+    padding: 4px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    height: 55px;
+    padding: 0 10px;
+  }
+  .nav-logo {
+    height: 40px;
+  }
+  .navbar-right {
+    gap: 8px;
+  }
+  .navbar-right a,
+  .logout-btn,
+  .welcome-text {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+}
