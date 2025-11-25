@@ -60,7 +60,7 @@ function SearchPage() {
       );
       const fullRecipeDetails = fullRecipeRes.data; // extracts the detailed recipe data
 
-      // 4. map ingredients to the simple string array expected by your backend
+      // 4. map ingredients to the simple string array expected by backend
       const originalIngredients = (fullRecipeDetails.extendedIngredients || [])
         .map((i) => i.original) // extracts the original text for each ingredient
         .filter(Boolean); // removes any null or undefined values
@@ -75,7 +75,7 @@ function SearchPage() {
         substitutions: {}, // empty object for initial substitutions
       };
 
-      // 5. post the recipe to your local backend
+      // 5. post the recipe to local backend
       await axios.post("http://localhost:5000/api/recipes", recipeData); // sends the prepared data to the local backend to save
       alert(`Recipe "${recipe.title}" saved successfully to your Cookbook!`); // shows success message
     } catch (error) {

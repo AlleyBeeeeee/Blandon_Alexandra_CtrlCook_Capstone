@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import "../styles/ContactUs.css"; // updated CSS
-import logo from "../assets/CClogo.png"; // import your logo
+import { useState } from "react";
+import "../styles/ContactUs.css";
+import logo from "../assets/CClogo.png";
 
 function ContactUs() {
   const [name, setName] = useState("");

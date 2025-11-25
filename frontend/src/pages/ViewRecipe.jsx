@@ -4,7 +4,7 @@ import axios from "axios";
 import "../styles/ViewRecipe.css";
 
 function ViewRecipe() {
-  const { id: recipeId } = useParams(); // extracts the 'id' parameter (spoonacular id) from the url
+  const { id: recipeId } = useParams(); // extracts the 'id' parameter
   const navigate = useNavigate(); // hook to get the navigation function
   const { state } = useLocation(); // hook to get the current location's state
   // initialize recipeDetails using state data (for initial render) or null
@@ -27,7 +27,6 @@ function ViewRecipe() {
   // effect to fetch full recipe details from spoonacular
   useEffect(() => {
     const fetchRecipeDetails = async () => {
-      // defines an async function to fetch the recipe
       try {
         const apiKey = import.meta.env.VITE_SPOONACULAR_API_KEY;
         if (!apiKey) {
@@ -79,7 +78,7 @@ function ViewRecipe() {
     fetchSubstitutions();
   }, [recipeDetails, userAllergies]);
 
-  // function to handle saving the recipe without customization
+  //  to handle saving the recipe without customization
   const handleSaveRecipe = async () => {
     if (!recipeDetails || isSaving) return; // prevents multiple clicks or saving partial data
 
@@ -91,18 +90,18 @@ function ViewRecipe() {
       .filter(Boolean); // ensures no empty strings are saved
 
     const recipeData = {
-      recipeId: String(recipeDetails.id), // use the numeric Spoonacular ID as a string
+      recipeId: String(recipeDetails.id),
       title: recipeDetails.title,
       image: recipeDetails.image,
-      instructions: recipeDetails.instructions || "", // use raw instructions or analyze later
+      instructions: recipeDetails.instructions || "",
       // when saving without customizing, custom ingredients are the same as original
       originalIngredients: originalIngredients,
       customIngredients: originalIngredients,
-      substitutions: {}, // none initially, as this isn't the customization screen
+      substitutions: {},
     };
 
     try {
-      // call your backend API endpoint to save the recipe
+      // call backend API endpoint to save the recipe
       const response = await axios.post(
         "http://localhost:5000/api/recipes",
         recipeData
@@ -132,7 +131,7 @@ function ViewRecipe() {
         <h1 className="recipe-title">{recipeDetails.title}</h1>
       </div>
 
-      {/* display active allergies for user feedback */}
+      {/* display active allergies for user feedback - not working*/}
       <p
         style={{
           border: "1px solid #ff951c",
@@ -156,7 +155,6 @@ function ViewRecipe() {
           ) : (
             <>
               💾 <span>Save</span>
-              {/* Wrap text in span if using the optional CSS */}
             </>
           )}
         </button>
@@ -214,4 +212,4 @@ function ViewRecipe() {
   );
 }
 
-export default ViewRecipe; // exports the component
+export default ViewRecipe;
