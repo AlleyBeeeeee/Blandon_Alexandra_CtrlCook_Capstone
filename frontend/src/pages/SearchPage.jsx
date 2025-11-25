@@ -107,9 +107,9 @@ function SearchPage() {
           value={query} // binds the input value to the 'query' state
           onChange={(e) => setQuery(e.target.value)} // updates the 'query' state on every input change
         />
-        <button type="submit" className="btn">
-          Search {/* the submit button */}
-        </button>
+        {/* <button type="submit" className="btn">
+          Search 
+        </button> */}
       </form>
 
       <div className="results">
