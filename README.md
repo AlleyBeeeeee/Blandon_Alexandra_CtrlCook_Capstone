@@ -9,15 +9,6 @@
 * **Persistent Curation:** Save and retrieve customized recipe versions in the "My Cookbook" view, backed by a **MongoDB** database.
 * **Responsive Design:** Functional and intuitive user experience across different devices.
 
- Application Objectives
-
-The core goals of the CtrlCook application are:
-
-* Facilitate easy access to diverse recipes via an external API.
-* Provide a user interface that allows personalized modification of recipe data.
-* Support database-backed storage for user-curated recipes.
-* Deliver a functional and intuitive user experience.
-
 ---
 
  Technology Stack
