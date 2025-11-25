@@ -43,27 +43,3 @@ The application follows a standard full-stack architecture, utilizing **RESTful 
     * **Fetching:** Frontend $\rightarrow$ Backend $\rightarrow$ Spoonacular API $\rightarrow$ Backend $\rightarrow$ Frontend.
     * **Saving:** Frontend $\rightarrow$ Backend $\rightarrow$ MongoDB.
     * **Retrieval (My Cookbook):** Frontend $\rightarrow$ Backend $\rightarrow$ MongoDB $\rightarrow$ Backend $\rightarrow$ Frontend.
-
----
-
-  Use Cases
-
-CtrlCook is designed to serve the needs of various users:
-
-* **Adaptation Seekers:** Individuals needing to adapt recipes due to **dietary restrictions** (e.g., gluten-free, low-sodium) or specific personal preferences.
-* **Curators:** Users who wish to maintain a **structured, persistent, and centralized** archive of their tested and customized recipes.
-* **Enthusiasts:** Cooking hobbyists who frequently **experiment with substitutions** and alterations to original recipes.
-* **Developers/Students:** A practical example for researching **full-stack application architecture**, state management (**Redux**), and **API integration**.
-
----
-
-  Future Enhancements
-
-The CtrlCook team plans to implement the following features to expand the application's capabilities:
-
-* **User Authentication and Profiles:** Secure login/registration and individual user profile persistence.
-* **Social Features:** Functionality for recipe sharing, community comments, and ratings.
-* **Utility Features:** Automatic **grocery list generation** based on saved recipes.
-* **Native Mobile Implementation:** Development of a dedicated mobile application.
-
-
