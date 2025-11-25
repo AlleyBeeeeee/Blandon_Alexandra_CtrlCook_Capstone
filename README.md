@@ -67,15 +67,4 @@ The CtrlCook team plans to implement the following features to expand the applic
 * **Utility Features:** Automatic **grocery list generation** based on saved recipes.
 * **Native Mobile Implementation:** Development of a dedicated mobile application.
 
----
-
-  Developer Learning Outcomes
-
-The development of this project solidified core competencies in:
-
-* Structuring and deploying a **full-stack JavaScript application**.
-* Utilizing **RESTful APIs** for dynamic and external content retrieval.
-* Implementing persistent storage using a **NoSQL database (MongoDB)**.
-* Applying state-management patterns via **Redux** for complex frontend state.
-* Designing **responsive user interfaces** and employing component-based styling.
 
