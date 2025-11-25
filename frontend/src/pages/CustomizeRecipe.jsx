@@ -4,23 +4,34 @@ import axios from "axios";
 import "../styles/CustomizeRecipe.css";
 
 function CustomizeRecipe() {
+  // react router hook to get state passed from the previous route (the recipe object)
   const { state } = useLocation();
+  // react router hook to programmatically change navigation
   const navigate = useNavigate();
 
+  // state to hold the recipe data fetched/passed initially
   const [recipeData, setRecipeData] = useState(state?.recipe || null);
+  // state holding the list of ingredients the user can modify
   const [ingredientList, setIngredientList] = useState([]);
+  // state holding potential substitutions fetched from the spoonacular api
   const [ingredientSubstitutions, setIngredientSubstitutions] = useState({});
+  // boolean flag to disable the save button while saving
   const [isSaving, setIsSaving] = useState(false);
+  // state to display success or error messages to the user
   const [message, setMessage] = useState("");
-
+  // state holding the editable recipe instructions
+  const [customInstructions, setCustomInstructions] = useState("");
+  // new state for the ingredient input box, tracks what the user is typing
+  const [newIngredientText, setNewIngredientText] = useState("");
+  // hardcoded list of user allergies for demonstration/lookup
   const userAllergies = ["milk", "egg", "peanuts"];
 
-  // Effect to initialize ingredientList
+  // effect to initialize ingredient list and custom instructions when recipe data loads
   useEffect(() => {
+    // exit if no recipe data is available
     if (!recipeData) return;
 
-    // Logic to prioritize existing custom/original ingredients from DB,
-    // then fall back to extendedIngredients from Spoonacular.
+    // 1. initialize ingredients: prioritize custom (for re-editing), then original (from db), then extended (from spoonacular)
     const extractedIngredients = recipeData.customIngredients?.length
       ? recipeData.customIngredients
       : recipeData.originalIngredients?.length
@@ -28,39 +39,48 @@ function CustomizeRecipe() {
       : recipeData.extendedIngredients?.map((i) => i.original) || [];
 
     setIngredientList(extractedIngredients);
+
+    // 2. initialize instructions: prioritize custom, then original
+    const extractedInstructions =
+      recipeData.customInstructions || recipeData.instructions || "";
+    setCustomInstructions(extractedInstructions);
   }, [recipeData]);
 
-  // Effect to fetch substitutions for known allergens
+  // effect to fetch substitutions for known allergens
   useEffect(() => {
     if (!recipeData) return;
 
     const fetchSubs = async () => {
       const subs = {};
+      // determine the source list for fetching substitutions (must match initialization logic)
       const sourceIngredients = recipeData.customIngredients?.length
         ? recipeData.customIngredients
         : recipeData.originalIngredients?.length
         ? recipeData.originalIngredients
         : recipeData.extendedIngredients?.map((i) => i.original) || [];
 
+      // loop through each ingredient to check for allergies
       for (let ing of sourceIngredients) {
-        // Handle both string ingredients and objects (if coming directly from Spoonacular API)
+        // extract the ingredient name, handling both string and object formats
         const ingName = (
           typeof ing === "string" ? ing : ing.name || ""
         ).toLowerCase();
 
-        // Skip if the name is empty or not in the allergy list
+        // skip if the ingredient name isn't one of the user's allergies (checking the first word)
         if (!ingName || !userAllergies.includes(ingName.split(" ")[0]))
           continue;
 
         try {
+          // call the spoonacular api to get substitutes for the allergic ingredient
           const res = await axios.get(
             `https://api.spoonacular.com/food/ingredients/substitutes?ingredientName=${ingName}&apiKey=${
               import.meta.env.VITE_SPOONACULAR_API_KEY
             }`
           );
+          // store the substitutes array, keyed by the ingredient name
           subs[ingName] = res.data.substitutes || [];
         } catch (err) {
-          console.error("Error fetching substitution for", ingName, err);
+          console.error("error fetching substitution for", ingName, err);
         }
       }
 
@@ -70,123 +90,159 @@ function CustomizeRecipe() {
     fetchSubs();
   }, [recipeData]);
 
-  //  Handlers for ingredient modification
+  // handlers for ingredient modification
+  // updates an existing ingredient (used by substitution dropdown)
   const updateIngredient = (index, newIngredient) => {
     const updated = [...ingredientList];
     updated[index] = newIngredient;
     setIngredientList(updated);
   };
 
+  // removes an ingredient from the list
   const deleteIngredient = (index) => {
     const updated = [...ingredientList];
     updated.splice(index, 1);
     setIngredientList(updated);
   };
 
-  // Function to save the customized recipe (FIXED)
+  // new handler: function to add a new ingredient from the input box
+  const addIngredient = () => {
+    const newText = newIngredientText.trim();
+    // only add if the input is not empty
+    if (newText) {
+      // append the new ingredient to the existing list
+      setIngredientList([...ingredientList, newText]);
+      // clear the input field after adding
+      setNewIngredientText("");
+    }
+  };
+
+  // function to save the customized recipe to the backend
   const saveCustomRecipe = async () => {
     setIsSaving(true);
     setMessage("");
 
     try {
-      // Determine the canonical list of original ingredients.
+      // determine the canonical list of original ingredients for comparison.
+      // this only includes original items, ignoring user-added ingredients for substitution mapping calculation.
       const originalSourceIngredients =
         recipeData.originalIngredients ||
         recipeData.extendedIngredients?.map((i) => i.original) ||
-        ingredientList;
+        ingredientList.slice(
+          0,
+          recipeData.originalIngredients?.length ||
+            recipeData.extendedIngredients?.length ||
+            0
+        );
 
       const substitutionMap = {};
 
-      // Calculate the substitution map by comparing the current list to the original list.
+      // calculate the substitution map by comparing the custom list to the original list.
       ingredientList.forEach((newIng, i) => {
         const originalIngText = originalSourceIngredients[i] || "";
-        // Ensure both are valid strings before processing
+
+        // skip check if the index 'i' corresponds to a newly added ingredient
+        if (i >= originalSourceIngredients.length) return;
+
         if (typeof originalIngText !== "string" || typeof newIng !== "string")
           return;
 
-        // Get a clean, lowercase name from the original ingredient text.
+        // sanitize and clean the original ingredient name for the map key
         let originalIngName = originalIngText
           .toLowerCase()
           .split(",")[0]
           .trim();
         originalIngName = originalIngName.replace(/\./g, "");
 
-        // Check if the ingredient has actually been changed
+        // check if the ingredient has been changed by the user (substitution)
         if (
           originalIngName &&
           newIng.toLowerCase().split(",")[0].trim() !== originalIngName
         ) {
           if (newIng.trim().length > 0) {
-            // Use the sanitized name as the key
+            // map the original name to the new substituted ingredient
             substitutionMap[originalIngName] = newIng.trim();
           }
         }
       });
 
-      //  Construct the payload
+      // construct the payload to send to the server
       const payload = {
-        // Use Spoonacular ID (id or recipeId), fallback is a last resort
+        // use recipe id from state, falling back to a timestamp if missing
         recipeId: String(recipeData.id || recipeData.recipeId || Date.now()),
         title: recipeData.title,
         image: recipeData.image,
 
-        // This is the array of strings for the original recipe
+        // send the canonical original ingredients
         originalIngredients: originalSourceIngredients,
 
-        // This is the array of strings for the customized recipe
+        // send the final, customized list of ingredients (including additions/deletions)
         customIngredients: ingredientList,
 
-        // The calculated map of changes (sanitized keys)
+        // send the map of changes/substitutions made to original ingredients
         substitutions: substitutionMap,
 
-        instructions: recipeData.instructions || "",
+        // send the user's edited instructions
+        instructions: customInstructions,
       };
 
-      console.log("Saving Payload:", payload); // Logging the final payload
+      console.log("saving payload:", payload);
 
+      // send the post request to the backend api
       await axios.post("http://localhost:5000/api/recipes", payload);
 
-      setMessage("Recipe saved successfully!");
+      setMessage("recipe saved successfully!");
+      // redirect the user to their cookbook page
       navigate("/mycookbook");
     } catch (err) {
-      console.error("Save failed:", err);
-      // If the error response contains details, display them
+      console.error("save failed:", err);
+      // extract and display error details from the response
       const errorMessage =
-        err.response?.data?.error || "Please check server logs for details.";
-      setMessage(`Failed to save recipe. Error: ${errorMessage}`);
+        err.response?.data?.error || "please check server logs for details.";
+      setMessage(`failed to save recipe. error: ${errorMessage}`);
     } finally {
+      // reset saving state regardless of success/failure
       setIsSaving(false);
     }
   };
 
-  // Loading and Error States
-  if (!recipeData) return <p className="loading-text">Loading recipe...</p>;
+  // loading state check
+  if (!recipeData) return <p className="loading-text">loading recipe...</p>;
 
-  //  Component Render
+  // component render starts here
   return (
     <div className="customize-container">
       <h2 className="page-title">Customize Recipe</h2>
+      {/* display messages if present */}
       {message && <p className="message">{message}</p>}
 
       <div className="ingredients-section">
-        <h3 className="section-title">Ingredients</h3>
+        <h3 className="section-title">Ingredients:</h3>
         <ul className="ingredient-list">
+          {/* map over the current ingredient list to display each item */}
           {ingredientList.map((ingredient, index) => {
-            const ingName = ingredient.toLowerCase().split(" ")[0].trim(); // Simple name for substitution lookup
+            // extract the base ingredient name for substitution lookup
+            const ingName = ingredient.toLowerCase().split(" ")[0].trim();
 
             return (
               <li key={index} className="ingredient-item">
+                {/* display the ingredient text */}
                 <span className="ingredient-text">{ingredient}</span>
 
+                {/* check if substitutions exist for this ingredient */}
                 {ingredientSubstitutions[ingName]?.length > 0 && (
                   <div className="substitute-select">
-                    <label className="substitute-label">Substitute: </label>
+                    <label className="substitute-label">substitute: </label>
                     <select
                       className="substitute-dropdown"
+                      // bind the select value to the current ingredient in the list
                       value={ingredient}
+                      // update the ingredientlist state when a new substitute is selected
                       onChange={(e) => updateIngredient(index, e.target.value)}
                     >
+                      {/* first option is always the current ingredient */}
                       <option value={ingredient}>{ingredient}</option>
+                      {/* map over available substitutes */}
                       {ingredientSubstitutions[ingName].map((sub, subIndex) => (
                         <option key={subIndex} value={sub}>
                           {sub}
@@ -196,6 +252,7 @@ function CustomizeRecipe() {
                   </div>
                 )}
 
+                {/* button to delete the ingredient */}
                 <button
                   className="delete-ingredient-btn"
                   onClick={() => deleteIngredient(index)}
@@ -206,14 +263,44 @@ function CustomizeRecipe() {
             );
           })}
         </ul>
+
+        {/* new input and button section for adding ingredients */}
+        <div className="add-ingredient-form">
+          <input
+            type="text"
+            className="new-ingredient-input"
+            placeholder="Add ingredient (e.g., 1 tsp salt)"
+            // bind value to newingredienttext state
+            value={newIngredientText}
+            // update state on change
+            onChange={(e) => setNewIngredientText(e.target.value)}
+            // allow adding by pressing the enter key
+            onKeyDown={(e) => {
+              if (e.key === "enter") {
+                e.preventDefault();
+                addIngredient();
+              }
+            }}
+          />
+          <button
+            className="add-ingredient-btn"
+            onClick={addIngredient}
+            // disable button if input is empty
+            disabled={!newIngredientText.trim()}
+          >
+            + Add
+          </button>
+        </div>
       </div>
 
       <div className="instructions-section">
         <h3 className="section-title">Instructions</h3>
         <textarea
           className="instructions-textarea"
-          value={recipeData.instructions || ""}
-          readOnly
+          // bind value to custominstructions state
+          value={customInstructions}
+          // update state on change, making it editable
+          onChange={(e) => setCustomInstructions(e.target.value)}
           rows={10}
         />
       </div>
@@ -221,6 +308,7 @@ function CustomizeRecipe() {
       <button
         className="save-btn"
         onClick={saveCustomRecipe}
+        // disable while saving
         disabled={isSaving}
       >
         {isSaving ? "Saving..." : "Save Recipe"}

@@ -139,7 +139,7 @@ function SearchPage() {
                   {/* displays the recipe title */}
                 </div>
 
-                {/* 🆕 SAVE BUTTON */}
+                {/* SAVE BUTTON */}
                 <button
                   className="btn save-btn"
                   onClick={(e) => {
@@ -157,6 +157,18 @@ function SearchPage() {
             )
           )}
         </ul>
+        <div className="search-buttons">
+          <button type="submit" className="btn">
+            Search
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => navigate("/random")}
+          >
+            I'm Feeling Lucky
+          </button>
+        </div>
       </div>
     </div>
   );

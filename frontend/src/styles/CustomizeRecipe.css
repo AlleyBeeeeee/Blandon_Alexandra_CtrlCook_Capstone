@@ -90,3 +90,55 @@
 .save-btn:hover {
   background-color: #e68517;
 }
+
+/* Styling for the container holding the new input and button */
+.add-ingredient-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0 25px 0;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 10px;
+}
+
+/* Styling for the input field */
+.new-ingredient-input {
+  flex-grow: 1;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.new-ingredient-input:focus {
+  border-color: #e68517;
+  outline: none;
+}
+
+/* Styling for the Add button */
+.add-ingredient-btn {
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+/* Hover effect */
+.add-ingredient-btn:not(:disabled):hover {
+  background-color: #218838;
+}
+
+/* Disabled state */
+.add-ingredient-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}

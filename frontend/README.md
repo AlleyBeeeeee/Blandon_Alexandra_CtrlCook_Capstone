@@ -1,16 +1,61 @@
-# React + Vite
+CtrlCook 🍳
+CtrlCook is a full-stack web application designed to support recipe exploration, customization, and personal culinary curation. The system enables users to browse externally sourced recipes, transform them through ingredient and instruction modifications, and archive customized versions for future use.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application Objectives
+Facilitate access to diverse recipes sourced via an external API
 
-Currently, two official plugins are available:
+Provide an interface allowing personalized modification of recipe data
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Support database-backed storage of user-curated recipes
 
-## React Compiler
+Deliver a functional and intuitive user experience across devices
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Use Cases
+CtrlCook addresses the needs of:
+Individuals seeking to adapt recipes to dietary restrictions or personal preferences
 
-## Expanding the ESLint configuration
+Users wishing to maintain a structured and persistent recipe archive
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Cooking enthusiasts who experiment with substitutions and alterations
+
+Students and developers researching full-stack application architecture and API integration
+
+Technology Stack
+Frontend: React, Redux
+Backend: Node.js (Express)
+Database: MongoDB
+External API: Spoonacular Recipe API
+
+System Architecture (High-Level Overview)
+The frontend communicates user requests to the backend.
+
+For recipe retrieval, the backend interacts with the Spoonacular API.
+
+When saving customized recipes, the backend writes data to MongoDB.
+
+The database persists user-generated recipe objects, enabling retrieval in the “My Cookbook” view.
+
+Changes in application state are managed via Redux to ensure synchronous UI behavior across components.
+
+Developer Learning Outcomes
+During the development of CtrlCook, the following competencies were strengthened:
+Structuring and deploying a full-stack JavaScript application
+
+Utilizing RESTful APIs for dynamic content retrieval
+
+Implementing persistent storage using MongoDB
+
+Applying state-management patterns via Redux
+
+Designing responsive user interfaces and component-based styling
+
+Potential Future Enhancements
+User authentication and profile persistence
+
+Intelligent substitution recommendations using AI models
+
+Social features including recipe sharing and commenting
+
+Automatic grocery list generation
+
+A native mobile implementation

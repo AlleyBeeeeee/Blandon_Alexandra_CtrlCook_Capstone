@@ -48,13 +48,13 @@ function MyCookBook() {
   return (
     // renders the cookbook view
     <div className="mycookbook-container">
-      <h2>my cookbook</h2>
+      <h2> My CookBook</h2>
       {savedRecipes.length === 0 ? (
         // empty state: displays if no recipes are saved
         <div className="empty-state">
-          <p>no saved recipes yet.</p>
+          <p>No saved recipes yet.</p>
           <Link to="/search" className="btn search-link-btn">
-            🔎 search recipes
+            Search Recipes
           </Link>
         </div>
       ) : (
@@ -76,20 +76,20 @@ function MyCookBook() {
                   state={{ recipe }}
                   className="btn view-btn"
                 >
-                  view
+                  View
                 </Link>
 
                 <button
                   onClick={() => handleCustomizeRecipe(recipe)}
                   className="btn customize-btn"
                 >
-                  ✏️ customize
+                  Customize
                 </button>
                 <button
                   onClick={() => handleDeleteRecipe(recipe._id)}
                   className="btn delete-btn"
                 >
-                  🗑️ delete
+                  🗑️ Delete
                 </button>
               </div>
             </div>
