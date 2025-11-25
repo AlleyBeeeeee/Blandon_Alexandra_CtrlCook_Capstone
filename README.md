@@ -62,7 +62,6 @@ CtrlCook is designed to serve the needs of various users:
 The CtrlCook team plans to implement the following features to expand the application's capabilities:
 
 * **User Authentication and Profiles:** Secure login/registration and individual user profile persistence.
-* **AI-Powered Recommendations:** Intelligent substitution recommendations for ingredients using machine learning models.
 * **Social Features:** Functionality for recipe sharing, community comments, and ratings.
 * **Utility Features:** Automatic **grocery list generation** based on saved recipes.
 * **Native Mobile Implementation:** Development of a dedicated mobile application.
