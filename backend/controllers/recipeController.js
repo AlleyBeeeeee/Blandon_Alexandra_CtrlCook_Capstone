@@ -1,6 +1,5 @@
 import Recipe from "../models/Recipe.js";
 
-// @desc    Get all user's saved recipes (Read)
 // @route   GET /api/recipes
 export const getUsersRecipes = async (req, res) => {
   try {
@@ -14,7 +13,6 @@ export const getUsersRecipes = async (req, res) => {
   }
 };
 
-// @desc    Get a single recipe by ID (Read)
 // @route   GET /api/recipes/:id
 export const getRecipeById = async (req, res) => {
   try {
@@ -35,7 +33,6 @@ export const getRecipeById = async (req, res) => {
   }
 };
 
-// @desc    Create/Save a new recipe (Create)
 // @route   POST /api/recipes
 export const createRecipe = async (req, res) => {
   try {
@@ -52,7 +49,6 @@ export const createRecipe = async (req, res) => {
   }
 };
 
-// @desc    Update a recipe by ID (Update)
 // @route   PUT /api/recipes/:id
 export const updateRecipe = async (req, res) => {
   const { title, ingredients, instructions, servings, readyInMinutes } =
@@ -82,7 +78,6 @@ export const updateRecipe = async (req, res) => {
   }
 };
 
-// @desc    Delete a recipe (Delete)
 // @route   DELETE /api/recipes/:id
 export const deleteRecipe = async (req, res) => {
   try {

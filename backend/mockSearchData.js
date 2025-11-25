@@ -1,3 +1,5 @@
+//when api runs out for the day
+
 export const mockSearchResults = [
   { id: 100001, title: "Mock Recipe 1: Overnight Oats with Berries" },
   { id: 100002, title: "Mock Recipe 2: Quick Chicken & Veggie Stir-Fry" },

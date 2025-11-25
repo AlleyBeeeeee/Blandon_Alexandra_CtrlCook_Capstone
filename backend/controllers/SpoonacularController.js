@@ -2,7 +2,6 @@ import axios from "axios";
 
 const SPOONACULAR_BASE_URL = "https://api.spoonacular.com/recipes";
 
-// @desc    Search recipes by query
 // @route   GET /api/spoonacular/search?query=
 export const searchRecipes = async (req, res) => {
   const { query } = req.query;
@@ -28,7 +27,6 @@ export const searchRecipes = async (req, res) => {
   }
 };
 
-// @desc    Get detailed recipe information by ID
 // @route   GET /api/spoonacular/:id
 export const getRecipeDetails = async (req, res) => {
   try {
