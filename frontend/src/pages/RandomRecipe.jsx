@@ -50,7 +50,6 @@ function RandomRecipe() {
       </div>
 
       <div className="view-actions">
-               {" "}
         <button
           className="action-btn customize-btn"
           onClick={() =>
